@@ -17,5 +17,7 @@ namespace Core.Interfaces
         Task<T> Get(ISpecification<T> spec);
         
         Task<List<T>> GetAll(ISpecification<T> spec);
+
+        Task<int> Count(ISpecification<T> spec);    
     }
 }
