@@ -41,7 +41,7 @@ namespace API
             services.AddSwaggerDocumentation();
             services.AddCors(options => options.AddPolicy("CorsPolicy", opt =>
             {
-                opt.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                opt.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200", "http://localhost:4200");
             }));
         }
 
@@ -53,7 +53,7 @@ namespace API
 
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
