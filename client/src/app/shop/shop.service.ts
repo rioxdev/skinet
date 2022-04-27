@@ -1,30 +1,46 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { map } from 'rxjs';
 import { IBrand } from '../shared/models/brand';
 import { IPagination } from '../shared/models/pagination';
 import { IType } from '../shared/models/productType';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ShopService {
+  baseUrl = 'https://localhost:5001/api/';
 
-  baseUrl ='https://localhost:5001/api/';
+  constructor(private http: HttpClient) {}
 
-  constructor(private http : HttpClient) { }
+  getProducts(brandId?: number, typeId?: number) {
+    let params = new HttpParams();
 
-  getProducts() {
-    return this.http.get<IPagination>(this.baseUrl + 'products');
+    if (brandId) {
+     params =  params.append('brandId', brandId.toString());
+    }
+
+    if (typeId) {
+     params = params.append('typeId', typeId.toString());
+    }
+
+    return this.http
+      .get<IPagination>(this.baseUrl + 'products', {
+        observe: 'response',
+        params,
+      })
+      .pipe(
+        map((response) => {
+          return response.body;
+        })
+      );
   }
 
-  getBrands()
-  {
+  getBrands() {
     return this.http.get<IBrand[]>(this.baseUrl + 'products/brands');
   }
 
-  getTypes()
-  {
+  getTypes() {
     return this.http.get<IType[]>(this.baseUrl + 'products/types');
   }
-
 }
