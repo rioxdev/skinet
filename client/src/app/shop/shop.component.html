@@ -3,19 +3,16 @@
 
         <section class="col-3">
             <h5 class="text-info mt-3">Types</h5>
-            <select class="custom-select">
-                <option>Name</option>
-                <option>Price low to high</option>
-                <option>Price high to low</option>
+            <select class="custom-select" (change)="onSortChanged($event)">
+                <option *ngFor="let item of sortOptions" [value]="item.value">
+                    {{item.text}}
+                </option>
             </select>
 
             <h5 class="text-info mt-3">Brands</h5>
             <ul class="list-group">
-                <li class="list-group-item" *ngFor="let item of brands"
-                    [class.active]="item.id == this.selectedBrans"
-                    [value] = "item.id"
-                    (click)="onBrandSelected(item.id)"
-                >
+                <li class="list-group-item" *ngFor="let item of brands" [class.active]="item.id == this.shopParams.brandId"
+                    [value]="item.id" (click)="onBrandSelected(item.id)">
                     {{item.name}}
                 </li>
             </ul>
@@ -23,10 +20,7 @@
             <h5 class="text-info mt-3">Types</h5>
             <ul class="list-group">
                 <li class="list-group-item" *ngFor="let item of productTypes"
-                    [class.active]="item.id == this.selectedType"
-                    [value] = "item.id"
-                    (click)="onTypeSelected(item.id)"
-                >
+                    [class.active]="item.id == this.shopParams.typeId" [value]="item.id" (click)="onTypeSelected(item.id)">
                     {{item.name}}
                 </li>
 
@@ -37,12 +31,12 @@
         <section class="col-9">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <header>
-                    <span>Showing <strong>6</strong> of <strong>50</strong> results </span>
+                    <span>Showing <strong>{{this.shopParams.pageSize * this.shopParams.pageNumber}}</strong> of <strong>{{this.totalCount}}</strong> results </span>
                 </header>
                 <div class="form-inline mt-2">
-                    <input type="text" class="form-control" placeholder="Search" style="width: 300ox;" />
-                    <button class="btn btn-outline-primary ml-2">Search</button>
-                    <button class="btn btn-outline-secondary ml-2">Reset</button>
+                    <input type="text" class="form-control" placeholder="Search" style="width: 300ox;" #txtSearch />
+                    <button class="btn btn-outline-primary ml-2" (click)="onSearchClicked()" >Search</button>
+                    <button class="btn btn-outline-secondary ml-2" (click)="onResetClicked()">Reset</button>
                 </div>
             </div>
             <div class="row">
@@ -51,6 +45,17 @@
 
                 </div>
             </div>
+
+            <div class="d-flex justify-content-center" *ngIf="this.totalCount && this.totalCount > this.shopParams.pageSize">
+                <pagination [boundaryLinks]="true" [totalItems]="this.totalCount" previousText="&lsaquo;" nextText="&rsaquo;"
+                    firstText="&laquo;" lastText="&raquo;"
+                    [itemsPerPage]="this.shopParams.pageSize"
+                    (pageChanged)="onPageChanged($event)"
+                    >
+
+                </pagination>
+            </div>
+
         </section>
     </div>
 </div>

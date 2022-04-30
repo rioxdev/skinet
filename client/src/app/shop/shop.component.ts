@@ -1,8 +1,9 @@
 import { error } from '@angular/compiler/src/util';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { IBrand } from '../shared/models/brand';
 import { IProduct } from '../shared/models/product';
 import { IType } from '../shared/models/productType';
+import { ShopParams } from '../shared/models/shopParams';
 import { ShopService } from './shop.service';
 
 @Component({
@@ -17,14 +18,31 @@ export class ShopComponent implements OnInit {
   productTypes!: IType[];
 
   all = {
-    id : 0,
-    name : 'All'
+    id: 0,
+    name: 'All'
   };
 
-  selectedBrans = 0;
-  selectedType = 0;
+  sortOptions = [
+    {
+      text: 'Name', value: 'name'
+    },
+    {
+      text: 'Price Low to High', value: 'priceAsc'
+    },
+    {
+      text: 'Price High to Low', value: 'priceDesc'
+    }
+  ];
 
-  constructor(private shopService: ShopService) { }
+  shopParams = new ShopParams();
+
+  totalCount = 0;
+
+  @ViewChild('txtSearch', { static: true }) txtSearch: ElementRef;
+
+  constructor(private shopService: ShopService, searchElement: ElementRef) {
+    this.txtSearch = searchElement;
+  }
 
   ngOnInit(): void {
     this.loadBrands();
@@ -35,20 +53,25 @@ export class ShopComponent implements OnInit {
 
 
   loadProducts() {
-    this.shopService.getProducts(this.selectedBrans, this.selectedType).subscribe(response => {
-      complete: if (response != null) this.products = response.data; 
-              else
-              this.products = []
-        ,
-        alert
+    this.shopService.getProducts(this.shopParams).subscribe(response => {
+      complete: if (response != null) {
+        this.products = response.data;
+        this.totalCount = response.count;
+        this.shopParams.pageNumber = response.pageIndex;
+        this.shopParams.pageSize = response.pageSize;
+      }
+      else
+        this.products = []
+          ,
+          alert
 
     });
   }
 
   loadBrands() {
-   
+
     this.shopService.getBrands().subscribe(response => {
-      complete: this.brands = [this.all, ...response] ,
+      complete: this.brands = [this.all, ...response],
         alert
     });
   }
@@ -60,18 +83,38 @@ export class ShopComponent implements OnInit {
     });
   }
 
-  onBrandSelected(brandId : number)
-  {
-    console.log(brandId);
-      this.selectedBrans = brandId;
-      this.loadProducts();
+  onBrandSelected(brandId: number) {
+    this.shopParams.brandId = brandId;
+    this.loadProducts();
   }
 
-  onTypeSelected(typeId : number)
-  {
-    console.log(typeId);
-      this.selectedType = typeId;
-      this.loadProducts();
+  onTypeSelected(typeId: number) {
+    this.shopParams.typeId = typeId;
+    this.loadProducts();
+  }
+
+  onSortChanged($event: any) {
+    this.shopParams.sort = $event.target.value;
+    this.loadProducts();
+  }
+
+  onPageChanged($event: any) {
+    this.shopParams.pageNumber = $event.page;
+    this.loadProducts();
+  }
+
+  onSearchClicked() {
+    this.shopParams.search = this.txtSearch.nativeElement.value;
+    
+    console.log(this.shopParams.search);
+
+    this.loadProducts();
+  }
+
+  onResetClicked(){
+    this.shopParams = new ShopParams();
+    this.txtSearch.nativeElement.value  = '';
+    this.loadProducts();
   }
 
 }
