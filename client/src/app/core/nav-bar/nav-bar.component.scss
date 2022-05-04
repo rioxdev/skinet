@@ -11,3 +11,19 @@
     top: -12px;
     left: 22px;
 }
+
+
+a{
+    text-decoration: none;
+    color: black;
+    &.active{
+        color: orange;
+    }
+}
+
+.logo{
+    cursor: pointer;
+    &:focus{
+        outline: none;
+    }
+}
