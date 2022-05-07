@@ -35,7 +35,7 @@
                 [totalCount]="this.totalCount"
                 > </app-paging-header>
                 <div class="form-inline mt-2">
-                    <input type="text" class="form-control" placeholder="Search" style="width: 300ox;" #txtSearch />
+                    <input type="text" class="form-control" placeholder="Search" style="width: 300ox;" #txtSearch  (keyup.enter)="onSearchClicked()"/>
                     <button class="btn btn-outline-primary ml-2" (click)="onSearchClicked()" >Search</button>
                     <button class="btn btn-outline-secondary ml-2" (click)="onResetClicked()">Reset</button>
                 </div>
