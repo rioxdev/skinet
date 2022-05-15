@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 
 namespace API
 {
@@ -38,6 +39,11 @@ namespace API
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddDbContext<StoreContext>(options => options.UseSqlServer(Configuration.GetConnectionString("default")));
             services.AddApplicationServices();
+            services.AddSingleton<IConnectionMultiplexer>(c =>
+                {
+                    var configuration = ConfigurationOptions.Parse(Configuration.GetConnectionString("Redis"), true);
+                    return ConnectionMultiplexer.Connect(configuration);
+                });
             services.AddSwaggerDocumentation();
             services.AddCors(options => options.AddPolicy("CorsPolicy", opt =>
             {
@@ -47,7 +53,7 @@ namespace API
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        { 
+        {
 
             app.UseMiddleware<ExceptionMiddleware>();
 
@@ -68,7 +74,7 @@ namespace API
                 app.UseSwaggerDocumentation();
             }
 
-            
+
 
             app.UseEndpoints(endpoints =>
             {
