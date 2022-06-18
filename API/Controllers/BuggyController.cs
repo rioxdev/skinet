@@ -1,5 +1,6 @@
 ﻿using API.Errors;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,6 +49,12 @@ namespace API.Controllers
             return Ok();
         }
 
+        [Authorize]
+        [HttpGet("testauth")]
+        public ActionResult<string> TestAuth()
+        {
+            return Ok("godlike");
+        }
 
     }
 }
